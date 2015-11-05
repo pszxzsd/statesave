@@ -14,7 +14,7 @@ tab = '    '
 
 def init():
     global ini_file, saves_path, arc_ext, arc_keep, rel_path, sort_files, states, col1
-    
+
     # init arg parser
     parser = argparse.ArgumentParser(description='''%(prog)s''')
     parser.add_argument("inifile", help="specify ini file to use")
@@ -23,7 +23,7 @@ def init():
     parser.add_argument("-d", "--destination",
         help="specify destination directory, defaults to the dir of the config file")
     args = parser.parse_args()
-    
+
     if not os.path.isfile(args.inifile):
         if args.create:
             _createIni(args.inifile)
@@ -38,7 +38,7 @@ def init():
             exit(1)
         else:
             ini_file = args.inifile
-    
+
     if args.destination:
         if not os.path.isdir(args.destination):
             print(args.destination, "does not exist or is not a directory")
@@ -47,13 +47,13 @@ def init():
             saves_path = args.destination
     else:
         saves_path = os.path.realpath(os.path.dirname(args.inifile))
-    
+
     # init config parser
     ini = configparser.ConfigParser()
     ini.optionxform = str
     ini.read(args.inifile)
     ini.sections()
-    
+
     #self.arc_cmd = ini['STATE']['ArchiveCommand']
     #self.arc_ext = ini['STATE']['ArchiveExtension']
     #if not self.arc_ext.startswith('.'):
@@ -65,10 +65,10 @@ def init():
     if sort_files not in ('no', 'age', 'smart'):
         print("SortFiles option must be one of no/age/smart")
         exit(1)
-    
+
     statesave_dict = dict(ini.items('SAVE'))
     exclude_dict = {}
-    
+
     for i in statesave_dict:
         path_search = re.findall('^.+?(?=$| +\= +exclude)|(?<=exclude\:\').+(?=\')', statesave_dict[i])
         if len(path_search) == 2:
@@ -78,7 +78,7 @@ def init():
             print("Error parsing path:", statesave_dict[i])
             exit(1)
     #print(exclude_dict)
-    
+
     # find existing saves
     save_regex = '^.+?(?=_[0-9_\-]{10,})'
     save_files = [f for f in os.listdir(saves_path) if f.endswith(arc_ext)
@@ -91,14 +91,14 @@ def init():
             save_dict[name] = [i]
         else:
             save_dict[name].append(i)
-    
+
     # create list with state objects
     states = []
     for i in statesave_dict:
         states.append(StateItem(i, os.path.expanduser(statesave_dict[i]).rstrip('/'),
         exclude_dict.get(i, None), save_dict.get(i, [])))
     states.sort(key=lambda x: x.name.casefold())
-    
+
     if states:
         col1 = len(max(states, key=lambda x: len(x.name)).name) + 4
 
@@ -115,7 +115,7 @@ def red(string):
 def yellow(string):
     return '\033[93m' + str(string) + '\033[0m'
 
-    
+
 def _createIni(ini_path):
     ini = configparser.ConfigParser()
     ini.optionxform = str
