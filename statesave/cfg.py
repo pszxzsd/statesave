@@ -4,6 +4,7 @@ import argparse
 import configparser
 import os
 import re
+import textwrap
 
 from stateitem import StateItem
 
@@ -27,7 +28,7 @@ def init():
     if not os.path.isfile(args.inifile):
         if args.create:
             _createIni(args.inifile)
-            print("configuration file created")
+            print("configuration file created, edit it to add archives")
             exit(0)
         else:
             print(args.inifile, "does not exist, use -c to create a default file")
@@ -126,8 +127,18 @@ def _createIni(ini_path):
     ini['STATE']['HomeRelativePath'] = 'no'
     ini['STATE']['SortFiles'] = 'smart'
     ini['SAVE'] = {}
-    ini['SAVE']['#foo name 1'] = '/foo/path1'
-    ini['SAVE']['#foo name 2'] = '~/foo/path2 = exclude:\'foo regex\''
+    ini['SAVE']['#name 1'] = '/foo/dir'
+    ini['SAVE']['#name 2'] = '~/foo/singlefile'
+    ini['SAVE']['#name 3'] = '~/foo/dir @exclude:\'regex\''
     with open(ini_path, 'w') as inifile:
         ini.write(inifile)
-        inifile.write('''# SortFiles = no/age/smart''')
+        inifile.write(textwrap.dedent('''
+            # KeepArchives = n
+            #     n: keep this many archives per save state, oldest archives
+            #        will be deleted
+            # HomeRelativePath = yes/no
+            #     yes: truncate /home/user/foo to /foo inside archives
+            # SortFiles = no/age/smart
+            #     age: oldest first, can reduce differences between archives
+            #     smart: group similar files, potentially better compression
+        '''))
