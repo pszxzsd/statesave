@@ -70,7 +70,7 @@ def init():
     exclude_dict = {}
 
     for i in statesave_dict:
-        path_search = re.findall('^.+?(?=$| +\= +exclude)|(?<=exclude\:\').+(?=\')', statesave_dict[i])
+        path_search = re.findall('^.+?(?=$| +@exclude)|(?<=exclude\:\').+(?=\')', statesave_dict[i])
         if len(path_search) == 2:
             statesave_dict[i] = path_search[0]
             exclude_dict[i] = path_search[1]
