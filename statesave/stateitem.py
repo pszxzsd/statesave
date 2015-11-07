@@ -99,7 +99,7 @@ class StateItem(object):
 
 
     def epoch(self):
-        if self._checked_change_date is False and os.path.isdir(self.path):
+        if self._checked_change_date is False and os.path.exists(self.path):
             self._epoch, self._date = self._getChangeDate()
             self._checked_change_date = True
         return self._epoch
@@ -125,6 +125,8 @@ class StateItem(object):
                 in os.walk(self.path) for f in filename]
             if self.exclude is not None:
                 files_dirs = [f for f in files_dirs if re.search(self.exclude, f) is None]
+        elif os.path.isfile(self.path):
+            files_dirs = [self.path]
         else:
             files_dirs = None
         self._checked_files = True
