@@ -12,7 +12,7 @@ def main():
     for i in cfg.states:
         print("{} {:.<{col2}} ".format(i.name, '', col2=cfg.col1-len(i.name)), end='')
         if i.epoch() == 0:
-            print(cfg.red("no dir '{}'".format(i.path)))
+            print(cfg.red("missing\n'{}'".format(i.path)))
         elif i.epoch() > i.save_epoch:
             print(cfg.cyan("creating new archive"), end='')
             i.createArchive(show_progress=True)
